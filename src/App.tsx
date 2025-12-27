@@ -1,5 +1,4 @@
 import { Route, Routes } from 'react-router-dom';
-import { AppShell } from './components/layout/AppShell';
 import { Protected } from './components/layout/Protected';
 import Dashboard from './pages/Dashboard';
 import Players from './pages/Players';
