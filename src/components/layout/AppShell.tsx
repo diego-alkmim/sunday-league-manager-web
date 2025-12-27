@@ -119,7 +119,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
               <div className="flex items-center gap-3 md:hidden">
                 {showLogo && <MenuButton />}
-                <UserBadge compact hideIfGuest />
+                <UserBadge hideIfGuest />
               </div>
 
               <nav className="hidden items-center gap-4 text-sm font-medium md:flex">
