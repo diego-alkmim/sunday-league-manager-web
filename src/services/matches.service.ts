@@ -11,6 +11,8 @@ export type Match = {
   type?: string;
   location?: string | null;
   status?: string;
+  lineups?: any[];
+  attendance?: any[];
 };
 
 export type MatchEvent = {

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
 import { Modal } from '../components/ui/Modal';
@@ -108,7 +107,7 @@ export default function Matches() {
     const entries = [...selectedStarters, ...selectedSubs].map((id) => ({
       playerId: id,
       role: selectedStarters.has(id) ? 'starter' : 'sub',
-    }));
+    })) as { playerId: string; role: 'starter' | 'sub'; inMinute?: number; outMinute?: number }[];
     // Envia apenas eventos novos (marcados como locais)
     const newEvents = localEvents.filter((ev: any) => ev.isLocal);
     for (const ev of newEvents) {

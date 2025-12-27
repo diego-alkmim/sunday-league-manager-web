@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import { Card } from '../components/ui/Card';
 import { useMatches } from '../hooks/useMatches';
 import { useTopScorers, useTopAssists, useCards } from '../hooks/useStats';
 import { Input } from '../components/ui/Input';
@@ -16,7 +15,6 @@ export default function Dashboard() {
   const [yearInput, setYearInput] = useState<string>(String(currentYear));
   const [yearFilter, setYearFilter] = useState<number>(currentYear);
   const teamName = useAuthStore((s) => s.user?.teamName ?? 'Meu Time');
-  const teamId = useAuthStore((s) => s.user?.teamId);
 
   const { data: matches } = useMatches({ year: yearFilter, take: 1000 });
   const { data: scorers } = useTopScorers(yearFilter);
@@ -250,7 +248,7 @@ function PieCard({
               position: 'bottom',
               labels: {
                 color: '#0f172a',
-                font: { weight: '600' },
+                font: { weight: 600 },
               },
             },
             tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}` } },
@@ -279,7 +277,6 @@ function aggregateReds(cards?: any[]) {
   });
   return Array.from(map.entries()).map(([playerName, count]) => ({ playerName, count }));
 }
-
 
 
 

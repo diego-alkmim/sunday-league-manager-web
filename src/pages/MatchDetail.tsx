@@ -3,7 +3,7 @@ import { Card } from '../components/ui/Card';
 import { useMatch } from '../hooks/useMatches';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addMatchEvent, setAttendance, setLineup, updateMatch } from '../services/matches.service';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePlayers } from '../hooks/usePlayers';
 
 export default function MatchDetail() {
@@ -34,9 +34,6 @@ export default function MatchDetail() {
     if (data?.scoreFor != null) setScoreFor(data.scoreFor as any);
     if (data?.scoreAgainst != null) setScoreAgainst(data.scoreAgainst as any);
   }, [data?.attendance, data?.lineups]);
-
-  const presentList = useMemo(() => Array.from(present), [present]);
-  const startersList = useMemo(() => Array.from(starters), [starters]);
 
   const eventMutation = useMutation({
     mutationFn: (payload: any) => addMatchEvent(id as string, payload),

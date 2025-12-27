@@ -16,7 +16,7 @@ const persisted = (() => {
   }
 })();
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((set) => ({
   token: persisted.token,
   user: persisted.user,
   login: (token, user) => {

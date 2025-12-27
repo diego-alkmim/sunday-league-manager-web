@@ -10,9 +10,9 @@ const UserIcon = () => (
   </svg>
 );
 
-type UserBadgeProps = { compact?: boolean; hideIfGuest?: boolean };
+type UserBadgeProps = { hideIfGuest?: boolean };
 
-const UserBadge = ({ compact = false, hideIfGuest = false }: UserBadgeProps) => {
+const UserBadge = ({ hideIfGuest = false }: UserBadgeProps) => {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const [show, setShow] = useState(false);
