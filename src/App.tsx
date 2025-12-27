@@ -13,20 +13,8 @@ import Login from './pages/Login';
 export default function App() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <AppShell>
-            <Dashboard />
-          </AppShell>
-        }
-      />
-      <Route
-        path="/login"
-        element={
-          <Login />
-        }
-      />
+      <Route path="/" element={<Protected><Dashboard /></Protected>} />
+      <Route path="/login" element={<Login />} />
       <Route
         path="/dashboard"
         element={
@@ -83,6 +71,7 @@ export default function App() {
           </Protected>
         }
       />
+      <Route path="*" element={<Protected><Dashboard /></Protected>} />
     </Routes>
   );
 }
