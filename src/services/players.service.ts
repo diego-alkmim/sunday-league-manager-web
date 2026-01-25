@@ -4,6 +4,7 @@ export type Player = {
   id: string;
   name: string;
   nickname?: string;
+  photoUrl?: string;
   position: string;
   foot?: string;
   number?: number;

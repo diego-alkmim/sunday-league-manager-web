@@ -21,6 +21,21 @@ export default function Dashboard() {
   const { data: assists } = useTopAssists(yearFilter);
   const { data: cards } = useCards(yearFilter);
 
+  const formatPlayerLabel = (name?: string, nickname?: string | null) => (nickname ? `${name} (${nickname})` : name ?? 'Jogador');
+
+  const scorersDisplay = useMemo(
+    () => scorers?.map((s: any) => ({ ...s, playerName: formatPlayerLabel(s.playerName, s.playerNickname) })) ?? [],
+    [scorers],
+  );
+  const assistsDisplay = useMemo(
+    () => assists?.map((s: any) => ({ ...s, playerName: formatPlayerLabel(s.playerName, s.playerNickname) })) ?? [],
+    [assists],
+  );
+  const cardsDisplay = useMemo(
+    () => cards?.map((s: any) => ({ ...s, playerName: formatPlayerLabel(s.playerName, s.playerNickname) })) ?? [],
+    [cards],
+  );
+
   const filteredMatches = useMemo(
     () => matches?.filter((m) => new Date(m.date).getFullYear() === yearFilter) ?? [],
     [matches, yearFilter],
@@ -135,7 +150,7 @@ export default function Dashboard() {
           subtitle="Gols marcados"
         >
           <PieCard
-            rows={scorers}
+            rows={scorersDisplay}
             valueKey="goals"
             labelKey="playerName"
             emptyLabel="Sem dados de gols."
@@ -148,7 +163,7 @@ export default function Dashboard() {
           subtitle="Passes para gol"
         >
           <PieCard
-            rows={assists}
+            rows={assistsDisplay}
             valueKey="assists"
             labelKey="playerName"
             emptyLabel="Sem dados de assistencias."
@@ -161,7 +176,7 @@ export default function Dashboard() {
           subtitle="Cartoes vermelhos"
         >
           <PieCard
-            rows={aggregateReds(cards)}
+            rows={aggregateReds(cardsDisplay)}
             valueKey="count"
             labelKey="playerName"
             emptyLabel="Sem expulsoes."
@@ -277,8 +292,3 @@ function aggregateReds(cards?: any[]) {
   });
   return Array.from(map.entries()).map(([playerName, count]) => ({ playerName, count }));
 }
-
-
-
-
-

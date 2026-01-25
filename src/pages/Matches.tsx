@@ -45,8 +45,10 @@ export default function Matches() {
   const [selectedStarters, setSelectedStarters] = useState<Set<string>>(new Set());
   const [selectedSubs, setSelectedSubs] = useState<Set<string>>(new Set());
   const [localEvents, setLocalEvents] = useState<any[]>([]);
+  const [viewMatchId, setViewMatchId] = useState<string | null>(null);
 
   const matchDetail = useMatch(finalizingId || undefined);
+  const viewMatchDetail = useMatch(viewMatchId || undefined);
 
   useEffect(() => {
     if (matchDetail.data) {
@@ -62,9 +64,16 @@ export default function Matches() {
       setSelectedSubs(subs);
       setLocalEvents(matchDetail.data.events ?? []);
     }
+    // sempre que abrir/fechar o modal, limpar mensagens de erro e inputs rápidos
+    setModalError(null);
+    setMinute(undefined);
+    setScorerId(undefined);
+    setAssistId(undefined);
+    setCardPlayerId(undefined);
   }, [matchDetail.data]);
 
   const playerOptions = useMemo(() => players ?? [], [players]);
+  const formatPlayer = (p: any) => (p?.nickname ? `${p.name} (${p.nickname})` : p?.name ?? 'Jogador');
   const selectedPlayers = useMemo(
     () => playerOptions.filter((p) => selectedStarters.has(p.id) || selectedSubs.has(p.id)),
     [playerOptions, selectedStarters, selectedSubs],
@@ -175,6 +184,7 @@ export default function Matches() {
 
   return (
     <div className="space-y-6">
+      {role === 'owner' && (
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-900 p-8 shadow-xl">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.10),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(99,102,241,0.18),transparent_40%)]" />
         <div className="relative flex flex-col gap-2 text-white">
@@ -270,6 +280,7 @@ export default function Matches() {
           </div>
         </div>
       </div>
+      )}
 
       <div className="mx-auto max-w-6xl grid gap-4 md:grid-cols-2">
         {matches &&
@@ -279,6 +290,15 @@ export default function Matches() {
             <div
               key={m.id}
               className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-md transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-lg"
+              role="button"
+              tabIndex={0}
+              onClick={() => setViewMatchId(m.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setViewMatchId(m.id);
+                }
+              }}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-cyan-50 opacity-60" />
               <div
@@ -313,7 +333,10 @@ export default function Matches() {
                   <div className="flex flex-col items-center justify-center gap-2 text-xs font-semibold">
                     <button
                       disabled={role !== 'owner'}
-                      onClick={() => setFinalizingId(m.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFinalizingId(m.id);
+                      }}
                       className={`w-24 rounded-lg px-3 py-1 ${
                         role !== 'owner'
                           ? 'cursor-not-allowed bg-slate-200 text-slate-500'
@@ -324,7 +347,10 @@ export default function Matches() {
                     </button>
                     <button
                       disabled={role !== 'owner'}
-                      onClick={() => deleteMatch.mutate(m.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteMatch.mutate(m.id);
+                      }}
                       className={`w-24 rounded-lg px-3 py-1 ${
                         role !== 'owner'
                           ? 'cursor-not-allowed bg-slate-200 text-slate-500'
@@ -351,7 +377,7 @@ export default function Matches() {
       <Modal title="Finalizar jogo" isOpen={!!finalizingId} onClose={() => setFinalizingId(null)}>
         {matchDetail.isLoading && <div>Carregando...</div>}
         {matchDetail.data && (
-          <div className="space-y-4">
+          <div className="space-y-4 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-indigo-50 p-4 shadow-sm">
             <div className="text-sm">
               Oponente: <strong>{matchDetail.data.opponentName}</strong>
             </div>
@@ -379,7 +405,7 @@ export default function Matches() {
             <div className="space-y-3">
               <div className="font-semibold text-sm">Jogadores</div>
 
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div className="rounded-xl border border-slate-200 bg-white/80 p-3 shadow-sm">
                 <div className="mb-2 text-xs font-semibold text-slate-700">Disponíveis</div>
                 <div className="space-y-2">
                   {availablePlayers.map((p) => (
@@ -387,7 +413,7 @@ export default function Matches() {
                       key={p.id}
                       className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs w-full"
                     >
-                      <span className="font-semibold text-slate-800">{p.name}</span>
+                      <span className="font-semibold text-slate-800">{formatPlayer(p)}</span>
                       <div className="flex gap-1">
                         <button
                           className="rounded-full bg-orange-500 px-2 py-1 text-[11px] font-semibold text-white hover:bg-orange-600"
@@ -418,10 +444,7 @@ export default function Matches() {
                 </div>
               </div>
 
-              <div
-                className="rounded-2xl border border-emerald-200 p-4"
-                style={{ background: 'linear-gradient(180deg, #ecfdf3 0%, #d1fae5 100%)' }}
-              >
+              <div className="rounded-2xl border border-emerald-200 p-4 shadow-sm" style={{ background: 'linear-gradient(180deg, #ecfdf3 0%, #d1fae5 100%)' }}>
                 <div className="mb-3 text-xs font-semibold text-emerald-900">Titulares</div>
                 <div className="flex flex-wrap gap-2">
                   {[...selectedStarters].map((id) => {
@@ -431,7 +454,7 @@ export default function Matches() {
                         key={id}
                         className="flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs shadow-sm"
                       >
-                        <span className="font-semibold text-slate-800">{p?.name}</span>
+                        <span className="font-semibold text-slate-800">{formatPlayer(p)}</span>
                         <button
                           className="text-[11px] font-semibold text-red-600 hover:text-red-700"
                           onClick={() => setSelectedStarters(new Set([...selectedStarters].filter((x) => x !== id)))}
@@ -447,7 +470,7 @@ export default function Matches() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-blue-200 bg-blue-50 p-3">
+              <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 shadow-sm">
                 <div className="mb-2 text-xs font-semibold text-blue-800">Reservas</div>
                 <div className="flex flex-wrap gap-2">
                   {[...selectedSubs].map((id) => {
@@ -457,7 +480,7 @@ export default function Matches() {
                         key={id}
                         className="flex items-center gap-2 rounded-full border border-blue-200 bg-white px-3 py-1 text-xs"
                       >
-                        <span className="font-semibold text-slate-800">{p?.name}</span>
+                        <span className="font-semibold text-slate-800">{formatPlayer(p)}</span>
                         <button
                           className="text-[11px] font-semibold text-red-600 hover:text-red-700"
                           onClick={() => setSelectedSubs(new Set([...selectedSubs].filter((x) => x !== id)))}
@@ -474,8 +497,8 @@ export default function Matches() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="font-semibold text-sm">Eventos</div>
+            <div className="space-y-2 rounded-xl border border-slate-200 bg-white/80 p-3 shadow-sm">
+              <div className="font-semibold text-sm text-slate-700">Eventos</div>
               <div className="flex flex-wrap items-center gap-2 pb-2">
                 <select className="rounded border border-slate-300 px-2 py-1 text-sm" value={eventType} onChange={(e) => setEventType(e.target.value as any)}>
                   <option value="goal">Gol</option>
@@ -483,12 +506,12 @@ export default function Matches() {
                   <option value="yellow">Amarelo</option>
                   <option value="red">Vermelho</option>
                 </select>
-                {(eventType === 'goal' || eventType === 'assist') && (
+                  {(eventType === 'goal' || eventType === 'assist') && (
                   <select className="rounded border border-slate-300 px-2 py-1 text-sm" value={scorerId ?? ''} onChange={(e) => setScorerId(e.target.value || undefined)}>
                     <option value="">Autor do gol</option>
                     {selectedPlayers.map((p: any) => (
                       <option key={p.id} value={p.id}>
-                        {p.name}
+                        {formatPlayer(p)}
                       </option>
                     ))}
                   </select>
@@ -498,7 +521,7 @@ export default function Matches() {
                     <option value="">Assistência</option>
                     {selectedPlayers.map((p: any) => (
                       <option key={p.id} value={p.id}>
-                        {p.name}
+                        {formatPlayer(p)}
                       </option>
                     ))}
                   </select>
@@ -508,7 +531,7 @@ export default function Matches() {
                     <option value="">Jogador</option>
                     {selectedPlayers.map((p: any) => (
                       <option key={p.id} value={p.id}>
-                        {p.name}
+                        {formatPlayer(p)}
                       </option>
                     ))}
                   </select>
@@ -558,12 +581,12 @@ export default function Matches() {
                   Adicionar
                 </button>
               </div>
-              <ul className="space-y-1">
+              <ul className="space-y-2">
                 {localEvents.map((ev: any) => (
-                  <li key={ev.id} className="text-sm">
+                  <li key={ev.id} className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
                     {ev.minute ? `${ev.minute}' ` : ''}{' '}
                     {ev.type === 'assist'
-                      ? `assist - ${ev.assist?.name ?? 'Assistente'} - gol - ${ev.scorer?.name ?? 'Autor do gol'}`
+                      ? `assist: ${ev.assist?.name ?? 'Assistente'} - gol: ${ev.scorer?.name ?? 'Autor do gol'}`
                       : `${ev.type} - ${ev.scorer?.name || ev.player?.name || ev.assist?.name || 'Jogador'}`}
                   </li>
                 ))}
@@ -573,6 +596,74 @@ export default function Matches() {
               <button onClick={handleFinalize} className="rounded bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
                 Salvar e finalizar
               </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      <Modal title="Detalhes do jogo" isOpen={!!viewMatchId} onClose={() => setViewMatchId(null)}>
+        {viewMatchDetail.isLoading && <div>Carregando...</div>}
+        {viewMatchDetail.data && (
+          <div className="space-y-4 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-indigo-50 p-4 shadow-sm">
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="rounded-xl bg-white p-3 shadow-sm">
+                <div className="text-xs uppercase tracking-wide text-slate-500">Oponente</div>
+                <div className="text-lg font-semibold text-slate-900">{viewMatchDetail.data.opponentName}</div>
+              </div>
+              <div className="rounded-xl bg-white p-3 shadow-sm">
+                <div className="text-xs uppercase tracking-wide text-slate-500">Placar</div>
+                <div className="text-lg font-semibold text-slate-900">
+                  {viewMatchDetail.data.scoreFor != null && viewMatchDetail.data.scoreAgainst != null
+                    ? `${viewMatchDetail.data.scoreFor} x ${viewMatchDetail.data.scoreAgainst}`
+                    : 'Não finalizado'}
+                </div>
+              </div>
+            </div>
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+              <div className="mb-2 text-xs font-semibold text-emerald-800 uppercase tracking-wide">Titulares</div>
+              <div className="flex flex-wrap gap-2 text-sm">
+                {(viewMatchDetail.data.lineups || [])
+                  .filter((l: any) => l.role === 'starter')
+                  .map((l: any) => (
+                    <span key={l.id} className="rounded-full bg-white px-3 py-1 shadow-sm">
+                      {formatPlayer(l.player)}
+                    </span>
+                  ))}
+                {!(viewMatchDetail.data.lineups || []).some((l: any) => l.role === 'starter') && (
+                  <span className="text-xs text-emerald-700">Sem titulares cadastrados.</span>
+                )}
+              </div>
+            </div>
+            <div className="rounded-xl border border-blue-200 bg-blue-50 p-3">
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-blue-800">Reservas</div>
+              <div className="flex flex-wrap gap-2 text-sm">
+                {(viewMatchDetail.data.lineups || [])
+                  .filter((l: any) => l.role === 'sub')
+                  .map((l: any) => (
+                    <span key={l.id} className="rounded-full bg-white px-3 py-1 shadow-sm">
+                      {formatPlayer(l.player)}
+                    </span>
+                  ))}
+                {!(viewMatchDetail.data.lineups || []).some((l: any) => l.role === 'sub') && (
+                  <span className="text-xs text-blue-700">Sem reservas cadastrados.</span>
+                )}
+              </div>
+            </div>
+            <div className="space-y-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+              <div className="text-xs font-semibold uppercase tracking-wide text-slate-600">Eventos</div>
+              <ul className="space-y-1 text-sm">
+                {(viewMatchDetail.data.events || []).map((ev: any) => (
+                  <li key={ev.id} className="rounded-lg bg-slate-50 px-3 py-1">
+                    {ev.minute ? `${ev.minute}' ` : ''}
+                    {ev.type === 'assist'
+                      ? `assist: ${formatPlayer(ev.assist)} - gol: ${formatPlayer(ev.scorer)}`
+                      : ev.type === 'goal'
+                        ? `gol: ${formatPlayer(ev.scorer)}`
+                        : `${ev.type} - ${formatPlayer(ev.player)}`}
+                  </li>
+                ))}
+                {!(viewMatchDetail.data.events || []).length && <li className="text-xs text-slate-500">Sem eventos.</li>}
+              </ul>
             </div>
           </div>
         )}

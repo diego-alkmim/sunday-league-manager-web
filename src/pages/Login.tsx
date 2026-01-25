@@ -10,10 +10,12 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
     try {
       const res = await api.post('/auth/login', { email, password });
       login(res.data.accessToken, {
@@ -26,6 +28,8 @@ export default function Login() {
       navigate('/dashboard');
     } catch (err: any) {
       setError(err?.response?.data?.message ?? 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,9 +80,10 @@ export default function Login() {
             <div className="flex flex-col gap-2">
               <button
                 type="submit"
-                className="w-full rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg hover:brightness-110 transition"
+                className="w-full rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg hover:brightness-110 transition disabled:opacity-70 disabled:cursor-not-allowed"
+                disabled={loading}
               >
-                Entrar
+                {loading ? 'Entrando...' : 'Entrar'}
               </button>
             </div>
           </form>
