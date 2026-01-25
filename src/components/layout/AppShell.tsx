@@ -1,10 +1,19 @@
-import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { Bars4Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { useAuthStore } from '../../store/auth.store';
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Bars4Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useAuthStore } from "../../store/auth.store";
 
 const UserIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
     <circle cx="12" cy="7" r="4" />
   </svg>
@@ -28,9 +37,15 @@ const UserBadge = ({ hideIfGuest = false }: UserBadgeProps) => {
       </button>
       {show && (
         <div className="absolute right-0 mt-2 min-w-[180px] rounded-xl border border-white/20 bg-white/90 p-3 text-slate-900 shadow-lg">
-          <div className="mb-2 text-xs font-semibold text-slate-600">Usuario</div>
-          <div className="text-sm font-medium text-slate-800">{user?.email ?? 'Guest'}</div>
-          <div className="text-xs text-slate-500">Time: {user?.teamName ?? '-'}</div>
+          <div className="mb-2 text-xs font-semibold text-slate-600">
+            Usuario
+          </div>
+          <div className="text-sm font-medium text-slate-800">
+            {user?.email ?? "Guest"}
+          </div>
+          <div className="text-xs text-slate-500">
+            Time: {user?.teamName ?? "-"}
+          </div>
           {user && (
             <button
               onClick={() => {
@@ -48,7 +63,9 @@ const UserBadge = ({ hideIfGuest = false }: UserBadgeProps) => {
   );
 };
 
-export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AppShell: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const user = useAuthStore((s) => s.user);
   const [open, setOpen] = useState(false);
   const [showLogo, setShowLogo] = useState(true);
@@ -59,8 +76,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       if (window.innerWidth >= 768) setOpen(false);
     };
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const renderNavLinks = (onClick?: () => void) => (
@@ -101,7 +118,11 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             <div className="flex w-full justify-center">
               {showLogo && (
                 <Link to="/dashboard" className="flex items-center gap-3">
-                  <img src="/slm_logo_full.png" alt="Sunday League Manager" className="h-10 sm:h-12 md:h-16 max-w-full object-contain" />
+                  <img
+                    src="/slm_logo_full.png"
+                    alt="Sunday League Manager"
+                    className="h-10 sm:h-12 md:h-16 max-w-full object-contain"
+                  />
                 </Link>
               )}
             </div>
@@ -109,8 +130,15 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             <>
               <div className="flex items-center gap-3">
                 {showLogo ? (
-                  <Link to="/dashboard" className="flex min-w-[140px] items-center gap-3">
-                    <img src="/slm_logo_full.png" alt="Sunday League Manager" className="h-10 sm:h-12 md:h-16 max-w-full object-contain" />
+                  <Link
+                    to="/dashboard"
+                    className="flex min-w-[140px] items-center gap-3"
+                  >
+                    <img
+                      src="/slm_logo_full.png"
+                      alt="Sunday League Manager"
+                      className="h-10 sm:h-12 md:h-16 max-w-full object-contain"
+                    />
                   </Link>
                 ) : (
                   <MenuButton />
@@ -133,7 +161,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
       {user && open && (
         <>
-          <div className="fixed inset-0 z-30 bg-black/40 md:hidden" onClick={() => setOpen(false)} />
+          <div
+            className="fixed inset-0 z-30 bg-black/40 md:hidden"
+            onClick={() => setOpen(false)}
+          />
           <div className="fixed inset-y-0 left-0 z-40 w-80 max-w-[80%] bg-gradient-to-b from-slate-900 to-indigo-900 text-white shadow-xl md:hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
               <span className="text-sm font-semibold">MENU</span>

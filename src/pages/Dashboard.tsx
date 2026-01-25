@@ -1,12 +1,12 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
-import { useMatches } from '../hooks/useMatches';
-import { useTopScorers, useTopAssists, useCards } from '../hooks/useStats';
-import { Input } from '../components/ui/Input';
-import { useAuthStore } from '../store/auth.store';
-import { formatMatchDate } from '../utils/date';
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Pie } from "react-chartjs-2";
+import { useMatches } from "../hooks/useMatches";
+import { useTopScorers, useTopAssists, useCards } from "../hooks/useStats";
+import { Input } from "../components/ui/Input";
+import { useAuthStore } from "../store/auth.store";
+import { formatMatchDate } from "../utils/date";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -14,30 +14,45 @@ export default function Dashboard() {
   const currentYear = new Date().getFullYear();
   const [yearInput, setYearInput] = useState<string>(String(currentYear));
   const [yearFilter, setYearFilter] = useState<number>(currentYear);
-  const teamName = useAuthStore((s) => s.user?.teamName ?? 'Meu Time');
+  const teamName = useAuthStore((s) => s.user?.teamName ?? "Meu Time");
 
   const { data: matches } = useMatches({ year: yearFilter, take: 1000 });
   const { data: scorers } = useTopScorers(yearFilter);
   const { data: assists } = useTopAssists(yearFilter);
   const { data: cards } = useCards(yearFilter);
 
-  const formatPlayerLabel = (name?: string, nickname?: string | null) => (nickname ? `${name} (${nickname})` : name ?? 'Jogador');
+  const formatPlayerLabel = (name?: string, nickname?: string | null) =>
+    nickname ? `${name} (${nickname})` : (name ?? "Jogador");
 
   const scorersDisplay = useMemo(
-    () => scorers?.map((s: any) => ({ ...s, playerName: formatPlayerLabel(s.playerName, s.playerNickname) })) ?? [],
+    () =>
+      scorers?.map((s: any) => ({
+        ...s,
+        playerName: formatPlayerLabel(s.playerName, s.playerNickname),
+      })) ?? [],
     [scorers],
   );
   const assistsDisplay = useMemo(
-    () => assists?.map((s: any) => ({ ...s, playerName: formatPlayerLabel(s.playerName, s.playerNickname) })) ?? [],
+    () =>
+      assists?.map((s: any) => ({
+        ...s,
+        playerName: formatPlayerLabel(s.playerName, s.playerNickname),
+      })) ?? [],
     [assists],
   );
   const cardsDisplay = useMemo(
-    () => cards?.map((s: any) => ({ ...s, playerName: formatPlayerLabel(s.playerName, s.playerNickname) })) ?? [],
+    () =>
+      cards?.map((s: any) => ({
+        ...s,
+        playerName: formatPlayerLabel(s.playerName, s.playerNickname),
+      })) ?? [],
     [cards],
   );
 
   const filteredMatches = useMemo(
-    () => matches?.filter((m) => new Date(m.date).getFullYear() === yearFilter) ?? [],
+    () =>
+      matches?.filter((m) => new Date(m.date).getFullYear() === yearFilter) ??
+      [],
     [matches, yearFilter],
   );
 
@@ -46,24 +61,39 @@ export default function Dashboard() {
     const now = new Date().getTime();
     return [...filteredMatches]
       .filter((m) => new Date(m.date).getTime() >= now)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
+      .sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      )[0];
   }, [filteredMatches]);
 
   const lastResult = useMemo(() => {
     if (!filteredMatches.length) return null;
     const now = new Date().getTime();
     return [...filteredMatches]
-      .filter((m) => m.scoreFor != null && m.scoreAgainst != null && new Date(m.date).getTime() <= now)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+      .filter(
+        (m) =>
+          m.scoreFor != null &&
+          m.scoreAgainst != null &&
+          new Date(m.date).getTime() <= now,
+      )
+      .sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      )[0];
   }, [filteredMatches]);
 
   const summary = useMemo(() => {
     const totalMatches = filteredMatches.length;
-    const finalized = filteredMatches.filter((m) => m.status === 'finalized');
+    const finalized = filteredMatches.filter((m) => m.status === "finalized");
     const matchesFinalized = finalized.length;
-    const wins = finalized.filter((m) => (m.scoreFor ?? 0) > (m.scoreAgainst ?? 0)).length;
-    const draws = finalized.filter((m) => (m.scoreFor ?? 0) === (m.scoreAgainst ?? 0)).length;
-    const losses = finalized.filter((m) => (m.scoreFor ?? 0) < (m.scoreAgainst ?? 0)).length;
+    const wins = finalized.filter(
+      (m) => (m.scoreFor ?? 0) > (m.scoreAgainst ?? 0),
+    ).length;
+    const draws = finalized.filter(
+      (m) => (m.scoreFor ?? 0) === (m.scoreAgainst ?? 0),
+    ).length;
+    const losses = finalized.filter(
+      (m) => (m.scoreFor ?? 0) < (m.scoreAgainst ?? 0),
+    ).length;
     return { matches: totalMatches, wins, draws, losses, matchesFinalized };
   }, [filteredMatches]);
 
@@ -74,8 +104,12 @@ export default function Dashboard() {
         <div className="relative space-y-4 text-white">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <h1 className="text-3xl font-semibold tracking-tight">Dashboard</h1>
-              <p className="text-sm text-slate-200">Resumo rapido do time, proximos jogos e destaques.</p>
+              <h1 className="text-3xl font-semibold tracking-tight">
+                Dashboard
+              </h1>
+              <p className="text-sm text-slate-200">
+                Resumo rapido do time, proximos jogos e destaques.
+              </p>
             </div>
             <div className="flex flex-col gap-2 md:flex-row md:items-end">
               <div className="w-32">
@@ -101,42 +135,67 @@ export default function Dashboard() {
               to="/matches"
               className="group block rounded-2xl bg-white/10 p-4 backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
             >
-              <div className="text-xs text-slate-200 transition group-hover:text-white">PROXIMO JOGO</div>
+              <div className="text-xs text-slate-200 transition group-hover:text-white">
+                PROXIMO JOGO
+              </div>
               {upcoming ? (
                 <div className="mt-2 text-center">
                   <div className="space-y-0 rounded-lg bg-white/10 px-3 py-1 shadow-inner">
-                    <div className="text-sm font-semibold">{teamName.toUpperCase()} x {upcoming.opponentName.toUpperCase()}</div>
-                    <div className="text-sm text-slate-200">{formatMatchDate(upcoming.date)}</div>
-                    {upcoming.competition?.name && <div className="text-xs text-blue-100">{upcoming.competition.name}</div>}
+                    <div className="text-sm font-semibold">
+                      {teamName.toUpperCase()} x{" "}
+                      {upcoming.opponentName.toUpperCase()}
+                    </div>
+                    <div className="text-sm text-slate-200">
+                      {formatMatchDate(upcoming.date)}
+                    </div>
+                    {upcoming.competition?.name && (
+                      <div className="text-xs text-blue-100">
+                        {upcoming.competition.name}
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
-                <div className="mt-2 text-sm text-slate-200">Sem jogos futuros.</div>
+                <div className="mt-2 text-sm text-slate-200">
+                  Sem jogos futuros.
+                </div>
               )}
             </Link>
             <Link
               to="/matches"
               className="group block rounded-2xl bg-white/10 p-4 backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
             >
-              <div className="text-xs text-slate-200 transition group-hover:text-white">ULTIMO RESULTADO</div>
+              <div className="text-xs text-slate-200 transition group-hover:text-white">
+                ULTIMO RESULTADO
+              </div>
               {lastResult ? (
                 <div className="mt-2 space-y-1 text-center">
                   <div className="inline-flex w-full flex-col items-center justify-center rounded-lg bg-white/10 px-3 py-3 shadow-inner">
-                    <div className="text-sm font-semibold">{teamName.toUpperCase()} x {lastResult.opponentName.toUpperCase()}</div>
+                    <div className="text-sm font-semibold">
+                      {teamName.toUpperCase()} x{" "}
+                      {lastResult.opponentName.toUpperCase()}
+                    </div>
                     <div className="inline-flex items-center justify-center rounded-md px-3 text-sm font-bold">
                       {lastResult.scoreFor} x {lastResult.scoreAgainst}
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="mt-2 text-sm text-slate-200">Sem jogos finalizados.</div>
+                <div className="mt-2 text-sm text-slate-200">
+                  Sem jogos finalizados.
+                </div>
               )}
             </Link>
             <div className="group rounded-2xl bg-white/10 p-4 backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15">
-              <div className="text-xs text-slate-200 transition group-hover:text-white">RESUMO</div>
+              <div className="text-xs text-slate-200 transition group-hover:text-white">
+                RESUMO
+              </div>
               <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
                 <Stat label="Jogos" value={summary.matchesFinalized} />
-                <Stat label="Vit/Emp/Der" value={`${summary.wins}/${summary.draws}/${summary.losses}`} />
+                <Stat
+                  label="Vit/Emp/Der"
+                  value={`${summary.wins}/${summary.draws}/${summary.losses}`}
+                />
               </div>
             </div>
           </div>
@@ -191,7 +250,9 @@ export default function Dashboard() {
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="rounded-lg bg-white/10 px-3 py-2 text-white/90 shadow-inner">
-      <div className="text-[11px] uppercase tracking-wide text-slate-200">{label}</div>
+      <div className="text-[11px] uppercase tracking-wide text-slate-200">
+        {label}
+      </div>
       <div className="text-lg font-semibold text-white">{value}</div>
     </div>
   );
@@ -211,14 +272,18 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} p-4 shadow-lg`}>
+    <div
+      className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} p-4 shadow-lg`}
+    >
       <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
       <div className="relative space-y-2 text-white">
         <div>
           <div className="text-lg font-semibold">{title}</div>
           {subtitle && <div className="text-xs text-white/80">{subtitle}</div>}
         </div>
-        <div className="rounded-xl bg-white/80 p-3 text-slate-900 shadow-inner">{children}</div>
+        <div className="rounded-xl bg-white/80 p-3 text-slate-900 shadow-inner">
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -237,17 +302,18 @@ function PieCard({
   emptyLabel: string;
   colors: string[];
 }) {
-  if (!rows || rows.length === 0) return <div className="text-sm text-slate-500">{emptyLabel}</div>;
+  if (!rows || rows.length === 0)
+    return <div className="text-sm text-slate-500">{emptyLabel}</div>;
 
   const top = rows.slice(0, 5);
   const data = {
-    labels: top.map((r) => r[labelKey] ?? 'Jogador'),
+    labels: top.map((r) => r[labelKey] ?? "Jogador"),
     datasets: [
       {
         label: valueKey,
         data: top.map((r) => r[valueKey]),
         backgroundColor: colors.slice(0, top.length),
-        borderColor: 'rgba(255,255,255,0.8)',
+        borderColor: "rgba(255,255,255,0.8)",
         borderWidth: 1,
       },
     ],
@@ -260,20 +326,25 @@ function PieCard({
         options={{
           plugins: {
             legend: {
-              position: 'bottom',
+              position: "bottom",
               labels: {
-                color: '#0f172a',
+                color: "#0f172a",
                 font: { weight: 600 },
               },
             },
-            tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}` } },
+            tooltip: {
+              callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}` },
+            },
           },
         }}
       />
       <div className="space-y-1 text-sm text-slate-800">
         {top.map((r, idx) => (
-          <div key={`${r[labelKey]}-${idx}`} className="flex items-center justify-between rounded-md bg-slate-50 px-2 py-1">
-            <span className="font-medium">{r[labelKey] ?? 'Jogador'}</span>
+          <div
+            key={`${r[labelKey]}-${idx}`}
+            className="flex items-center justify-between rounded-md bg-slate-50 px-2 py-1"
+          >
+            <span className="font-medium">{r[labelKey] ?? "Jogador"}</span>
             <span className="font-semibold">{r[valueKey]}</span>
           </div>
         ))}
@@ -286,9 +357,12 @@ function aggregateReds(cards?: any[]) {
   if (!cards) return [];
   const map = new Map<string, number>();
   cards.forEach((c) => {
-    if (c.type !== 'red') return;
-    const name = c.playerName ?? 'Jogador';
+    if (c.type !== "red") return;
+    const name = c.playerName ?? "Jogador";
     map.set(name, (map.get(name) ?? 0) + c.count);
   });
-  return Array.from(map.entries()).map(([playerName, count]) => ({ playerName, count }));
+  return Array.from(map.entries()).map(([playerName, count]) => ({
+    playerName,
+    count,
+  }));
 }
