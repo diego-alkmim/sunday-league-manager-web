@@ -15,9 +15,11 @@ import {
 } from "../services/matches.service";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/auth.store";
+import { useYearStore } from "../store/year.store";
 import { formatMatchDate } from "../utils/date";
 
 export default function Matches() {
+  const { year } = useYearStore();
   const {
     data,
     isLoading,
@@ -25,7 +27,7 @@ export default function Matches() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteMatches(undefined, 10);
+  } = useInfiniteMatches(year, 10);
   const matches = useMemo(() => data?.pages.flat() ?? [], [data]);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const { data: competitions } = useCompetitions();
