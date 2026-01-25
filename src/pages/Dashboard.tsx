@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
@@ -6,15 +6,22 @@ import { useMatches } from "../hooks/useMatches";
 import { useTopScorers, useTopAssists, useCards } from "../hooks/useStats";
 import { Input } from "../components/ui/Input";
 import { useAuthStore } from "../store/auth.store";
+import { useYearStore } from "../store/year.store";
 import { formatMatchDate } from "../utils/date";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function Dashboard() {
   const currentYear = new Date().getFullYear();
-  const [yearInput, setYearInput] = useState<string>(String(currentYear));
-  const [yearFilter, setYearFilter] = useState<number>(currentYear);
+  const { year, setYear } = useYearStore();
+  const [yearInput, setYearInput] = useState<string>(String(year));
+  const [yearFilter, setYearFilter] = useState<number>(year);
   const teamName = useAuthStore((s) => s.user?.teamName ?? "Meu Time");
+
+  useEffect(() => {
+    setYearFilter(year);
+    setYearInput(String(year));
+  }, [year]);
 
   const { data: matches } = useMatches({ year: yearFilter, take: 1000 });
   const { data: scorers } = useTopScorers(yearFilter);
@@ -123,7 +130,11 @@ export default function Dashboard() {
                 />
               </div>
               <button
-                onClick={() => setYearFilter(Number(yearInput) || currentYear)}
+                onClick={() => {
+                  const selected = Number(yearInput) || currentYear;
+                  setYearFilter(selected);
+                  setYear(selected);
+                }}
                 className="rounded-xl bg-white/15 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-white/25"
               >
                 Filtrar
