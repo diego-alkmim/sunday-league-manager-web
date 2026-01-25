@@ -1,4 +1,4 @@
-import { api } from './apiClient';
+import { api } from "./apiClient";
 
 export type Player = {
   id: string;
@@ -12,16 +12,19 @@ export type Player = {
 };
 
 export const fetchPlayers = async (): Promise<Player[]> => {
-  const res = await api.get('/players');
+  const res = await api.get("/players");
   return res.data;
 };
 
-export const createPlayer = async (payload: Omit<Player, 'id' | 'teamId'>) => {
-  const res = await api.post('/players', payload);
+export const createPlayer = async (payload: Omit<Player, "id" | "teamId">) => {
+  const res = await api.post("/players", payload);
   return res.data;
 };
 
-export const updatePlayer = async (id: string, payload: Partial<Omit<Player, 'id' | 'teamId'>>) => {
+export const updatePlayer = async (
+  id: string,
+  payload: Partial<Omit<Player, "id" | "teamId">>,
+) => {
   const res = await api.patch(`/players/${id}`, payload);
   return res.data;
 };

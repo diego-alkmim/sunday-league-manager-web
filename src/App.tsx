@@ -1,18 +1,25 @@
-import { Route, Routes } from 'react-router-dom';
-import { Protected } from './components/layout/Protected';
-import Dashboard from './pages/Dashboard';
-import Players from './pages/Players';
-import Teams from './pages/Teams';
-import Competitions from './pages/Competitions';
-import Matches from './pages/Matches';
-import MatchDetail from './pages/MatchDetail';
-import Stats from './pages/Stats';
-import Login from './pages/Login';
+import { Route, Routes } from "react-router-dom";
+import { Protected } from "./components/layout/Protected";
+import Dashboard from "./pages/Dashboard";
+import Players from "./pages/Players";
+import Teams from "./pages/Teams";
+import Competitions from "./pages/Competitions";
+import Matches from "./pages/Matches";
+import MatchDetail from "./pages/MatchDetail";
+import Stats from "./pages/Stats";
+import Login from "./pages/Login";
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Protected><Dashboard /></Protected>} />
+      <Route
+        path="/"
+        element={
+          <Protected>
+            <Dashboard />
+          </Protected>
+        }
+      />
       <Route path="/login" element={<Login />} />
       <Route
         path="/dashboard"
@@ -70,7 +77,14 @@ export default function App() {
           </Protected>
         }
       />
-      <Route path="*" element={<Protected><Dashboard /></Protected>} />
+      <Route
+        path="*"
+        element={
+          <Protected>
+            <Dashboard />
+          </Protected>
+        }
+      />
     </Routes>
   );
 }
