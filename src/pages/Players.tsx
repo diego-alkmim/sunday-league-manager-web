@@ -98,87 +98,92 @@ export default function Players() {
 
   return (
     <div className="space-y-6">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-900 p-8 shadow-xl">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.10),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(99,102,241,0.18),transparent_40%)]" />
-        <div className="relative flex flex-col gap-2 text-white">
-          <h1 className="text-3xl font-semibold tracking-tight">Jogadores</h1>
-          <p className="text-sm text-slate-200">
-            Cadastre, edite e gerencie seu elenco.
-          </p>
-          <div className="mt-4 rounded-2xl bg-white/10 p-4 backdrop-blur">
-            <form
-              className="grid grid-cols-1 items-end gap-3 md:grid-cols-12"
-              onSubmit={handleSubmit}
-            >
-              <Input
-                label="Nome"
-                labelClassName="text-white/80"
-                wrapperClassName="col-span-full md:col-span-12"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                required
-                className="bg-white/90 text-slate-900"
-                disabled={!canManage}
-              />
-              <Input
-                label="Apelido"
-                labelClassName="text-white/80"
-                wrapperClassName="md:col-span-6"
-                value={form.nickname}
-                onChange={(e) => setForm({ ...form, nickname: e.target.value })}
-                className="bg-white/90 text-slate-900"
-                disabled={!canManage}
-              />
-              <Select
-                label="Posição"
-                labelClassName="text-white/80"
-                wrapperClassName="md:col-span-6"
-                value={form.position}
-                onChange={(e) => setForm({ ...form, position: e.target.value })}
-                required
-                className="bg-white/90 text-slate-900"
-                disabled={!canManage}
+      {canManage && (
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-900 p-8 shadow-xl">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.10),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(99,102,241,0.18),transparent_40%)]" />
+          <div className="relative flex flex-col gap-2 text-white">
+            <h1 className="text-3xl font-semibold tracking-tight">Jogadores</h1>
+            <p className="text-sm text-slate-200">
+              Cadastre, edite e gerencie seu elenco.
+            </p>
+            <div className="mt-4 rounded-2xl bg-white/10 p-4 backdrop-blur">
+              <form
+                className="grid grid-cols-1 items-end gap-3 md:grid-cols-12"
+                onSubmit={handleSubmit}
               >
-                <option value=""></option>
-                {positions.map((pos) => (
-                  <option key={pos} value={pos}>
-                    {pos}
-                  </option>
-                ))}
-              </Select>
-              <Select
-                label="Perna"
-                labelClassName="text-white/80"
-                wrapperClassName="md:col-span-6"
-                value={form.foot}
-                onChange={(e) => setForm({ ...form, foot: e.target.value })}
-                className="bg-white/90 text-slate-900"
-                disabled={!canManage}
-              >
-                <option value=""></option>
-                {feet.map((f) => (
-                  <option key={f} value={f}>
-                    {f}
-                  </option>
-                ))}
-              </Select>
-              <Select
-                label="Número"
-                labelClassName="text-white/80"
-                wrapperClassName="md:col-span-6"
-                value={form.number}
-                onChange={(e) => setForm({ ...form, number: e.target.value })}
-                className="bg-white/90 text-slate-900"
-                disabled={!canManage}
-              >
-                <option value=""></option>
-                {numbers.map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </Select>
-              {/* <Input
+                <Input
+                  label="Nome"
+                  labelClassName="text-white/80"
+                  wrapperClassName="col-span-full md:col-span-12"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  required
+                  className="bg-white/90 text-slate-900"
+                  disabled={!canManage}
+                />
+                <Input
+                  label="Apelido"
+                  labelClassName="text-white/80"
+                  wrapperClassName="md:col-span-6"
+                  value={form.nickname}
+                  onChange={(e) =>
+                    setForm({ ...form, nickname: e.target.value })
+                  }
+                  className="bg-white/90 text-slate-900"
+                  disabled={!canManage}
+                />
+                <Select
+                  label="Posição"
+                  labelClassName="text-white/80"
+                  wrapperClassName="md:col-span-6"
+                  value={form.position}
+                  onChange={(e) =>
+                    setForm({ ...form, position: e.target.value })
+                  }
+                  required
+                  className="bg-white/90 text-slate-900"
+                  disabled={!canManage}
+                >
+                  <option value=""></option>
+                  {positions.map((pos) => (
+                    <option key={pos} value={pos}>
+                      {pos}
+                    </option>
+                  ))}
+                </Select>
+                <Select
+                  label="Perna"
+                  labelClassName="text-white/80"
+                  wrapperClassName="md:col-span-6"
+                  value={form.foot}
+                  onChange={(e) => setForm({ ...form, foot: e.target.value })}
+                  className="bg-white/90 text-slate-900"
+                  disabled={!canManage}
+                >
+                  <option value=""></option>
+                  {feet.map((f) => (
+                    <option key={f} value={f}>
+                      {f}
+                    </option>
+                  ))}
+                </Select>
+                <Select
+                  label="Número"
+                  labelClassName="text-white/80"
+                  wrapperClassName="md:col-span-6"
+                  value={form.number}
+                  onChange={(e) => setForm({ ...form, number: e.target.value })}
+                  className="bg-white/90 text-slate-900"
+                  disabled={!canManage}
+                >
+                  <option value=""></option>
+                  {numbers.map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </Select>
+                {/* <Input
                 label="Foto (URL)"
                 labelClassName="text-white/80"
                 wrapperClassName="md:col-span-6"
@@ -188,27 +193,28 @@ export default function Players() {
                 placeholder="https://..."
                 disabled={!canManage}
               /> */}
-              <div className="col-span-full md:col-span-12 flex justify-end w-full">
-                <button
-                  type="submit"
-                  className="w-full max-w-full rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-lg hover:brightness-110 transition text-center"
-                  disabled={createPlayer.isPending || !canManage}
-                >
-                  Adicionar
-                </button>
-              </div>
-            </form>
-            {isLoading && (
-              <div className="mt-3 text-white/80">Carregando...</div>
-            )}
-            {error && (
-              <div className="mt-3 text-sm text-red-200">
-                Erro ao carregar jogadores
-              </div>
-            )}
+                <div className="col-span-full md:col-span-12 flex justify-end w-full">
+                  <button
+                    type="submit"
+                    className="w-full max-w-full rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-lg hover:brightness-110 transition text-center"
+                    disabled={createPlayer.isPending || !canManage}
+                  >
+                    Adicionar
+                  </button>
+                </div>
+              </form>
+              {isLoading && (
+                <div className="mt-3 text-white/80">Carregando...</div>
+              )}
+              {error && (
+                <div className="mt-3 text-sm text-red-200">
+                  Erro ao carregar jogadores
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="mx-auto max-w-5xl grid gap-3 md:grid-cols-2">
         {data?.map((p) =>
